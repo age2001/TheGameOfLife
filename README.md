@@ -1,4 +1,10 @@
 # TheGameOfLife
-Project implementing John Conway's Game of Life algorithm.
+Project implementing John Conway's Game of Life algorithm in python 3.11.1.
+This is also an opportunity to learn new python packages and work with virtual environments for development.
 
-I have plans to make the state checking more efficient and to make the window interactable, as well as implement ways to input specific designs.
+Current Checklist:
+• Make state checking more efficient
+    - Move from matplotlib to another library for displaying current cell board state
+• Make cell board interactive
+• Implement method for user to create custom shapes
+    - Save feature so user can store their shape and input them in later instances
