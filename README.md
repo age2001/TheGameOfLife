@@ -1,4 +1,4 @@
-# TheGameOfLife
+# The Game of Life
 Project implementing John Conway's Game of Life algorithm in python 3.11.1.
 This is also an opportunity to learn new python packages and work with virtual environments for development.
 
