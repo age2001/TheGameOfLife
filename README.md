@@ -9,3 +9,6 @@ Current Checklist:
 * Make cell board interactive
 * Implement method for user to create custom shapes
     * Save feature so user can store their shape and input them in later instances
+* Give user the option to alter board and rules
+    * GUI for entering the width and height of the board
+    * GUI for setting how many neighboring cells keep it alive or dead

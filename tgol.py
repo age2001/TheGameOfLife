@@ -1,7 +1,14 @@
+"""
+# The Game of Life Algorithm
+# Adjustments to the rules for the cells can be made in function cell_state()
+# TODO: Implement GUI for user changing cell rules
+"""
+
 from random import random
 
 """
-# Function which creates initial board state with every cell "dead" (set to 0)
+# Function creates initial board state with every cell set to "dead" (0)
+# Returns board (array of arrays)
 """
 def dead_state(width, height):
     dead_board = []
@@ -10,7 +17,8 @@ def dead_state(width, height):
     return dead_board
 
 """
-# Function which randomizes the state of each cell on creation
+# Function randomizes the state of each cell on creation
+# Returns int
 """
 def random_state(width, height):
     state = dead_state(width, height)
@@ -26,6 +34,7 @@ def random_state(width, height):
 
 """
 # Function to calculate the next board state from current parameters
+# Returns board (array of arrays)
 """
 def next_board_state(current_board, width, height):
     new_board = []
@@ -40,9 +49,39 @@ def next_board_state(current_board, width, height):
     return new_board
 
 """
+# Helper function that checks whether a cell is dead or alive (0 or 1) for next board state
+# Returns int
+"""
+def cell_state(x, y, board, total_neighbor_cells):
+    # Any live cell with 0 or 1 live neighbors becomes dead, because of underpopulation
+    # Any live cell with 2 or 3 live neighbors stays alive, because its neighborhood is just right
+    # Any live cell with more than 3 live neighbors becomes dead, because of overpopulation
+    # Any dead cell with exactly 3 live neighbors becomes alive, by reproduction
+    if board[y][x] == 1:
+        match total_neighbor_cells:
+            case 0:
+                return 0
+            case 1:
+                return 0
+            case 2:
+                return 1
+            case 3:
+                return 1
+            case _:
+                return 0
+    else:
+        match total_neighbor_cells:
+            case 3:
+                return 1
+            case _:
+                return 0
+
+"""
 # Helper function to check the state of the neighbors 3x3 around a cell
 # Neighbor cells depends on if the cell is on the border, or in the middle of the grid
-#        Cell Board Guide
+# Returns int
+#        
+#       Cell Board Guide
 #    topLeft  | board[y-1][x-1]
 #    topMid   | board[y-1][x]
 #    topRight | board[y-1][x+1]
@@ -53,7 +92,7 @@ def next_board_state(current_board, width, height):
 #    botRight | board[y+1][x+1]    
 """
 def check_neighbors(x, y, maxX, maxY, board):
-    total_cells = 0
+    total_neighbor_cells = 0
     if x == 0:
         if y == 0:
             neighbor_cells = [board[y][x+1], board[y+1][x], board[y+1][x+1]]
@@ -82,27 +121,6 @@ def check_neighbors(x, y, maxX, maxY, board):
     # Counting the number of living cells surrounding a particular cell    
     for cell in neighbor_cells:
         if cell == 1:
-            total_cells += 1
+            total_neighbor_cells += 1
 
-    # Any live cell with 0 or 1 live neighbors becomes dead, because of underpopulation
-    # Any live cell with 2 or 3 live neighbors stays alive, because its neighborhood is just right
-    # Any live cell with more than 3 live neighbors becomes dead, because of overpopulation
-    # Any dead cell with exactly 3 live neighbors becomes alive, by reproduction
-    if board[y][x] == 1:
-        match total_cells:
-            case 0:
-                return 0
-            case 1:
-                return 0
-            case 2:
-                return 1
-            case 3:
-                return 1
-            case _:
-                return 0
-    else:
-        match total_cells:
-            case 3:
-                return 1
-            case _:
-                return 0
+    return cell_state(x, y, board, total_neighbor_cells)
