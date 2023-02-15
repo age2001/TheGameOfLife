@@ -1,7 +1,6 @@
 """
 # The Game of Life Algorithm
 # Adjustments to the rules for the cells can be made in function cell_state()
-# TODO: Implement GUI for user changing cell rules
 """
 
 from random import random
@@ -51,6 +50,7 @@ def next_board_state(current_board, width, height):
 """
 # Helper function that checks whether a cell is dead or alive (0 or 1) for next board state
 # Returns int
+# TODO: Implement GUI for user changing cell rules
 """
 def cell_state(x, y, board, total_neighbor_cells):
     # Any live cell with 0 or 1 live neighbors becomes dead, because of underpopulation

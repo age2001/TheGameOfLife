@@ -2,10 +2,10 @@ from time import sleep
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import PySimpleGUI as sg
-from tgol import next_board_state
+from tgol import next_board_state, random_state, dead_state
 
 """
-# Render function to print each board state to command line
+# Board render function to print each board state to command line
 """
 def cl_render(board):
     width = len(board[0])
@@ -23,7 +23,7 @@ def cl_render(board):
     sleep(0.5)
 
 """
-# Render function using matplotlib grid
+# Board render function using matplotlib grid
 """
 def plt_render(board, width, height):
     first = True
@@ -62,8 +62,7 @@ def plt_render(board, width, height):
             plt.pause(0.1)
 
 """
-# Render function using pysimplegui grid
-# TODO: Implement GUI to render board state to user using pysimplegui
+# Board render function using pysimplegui grid
 """
 def gui_render(board, width, height):
     CELL_SIZE = 25
@@ -73,29 +72,49 @@ def gui_render(board, width, height):
 
     layout = [  [sg.Text('Drawing on a %dx%d Grid' % (total_cells_width, total_cells_height))],
                 [sg.Graph((width, height), (0,0), (width, height), background_color='black', drag_submits=True, key='GRAPH')],
-                [sg.Button('Start'), sg.Button('Pause'), sg.Button('Random'), sg.Button('Blank')]
+                [sg.Button('Start'), sg.Button('Pause'), sg.Button('Random'), sg.Button('Blank'), sg.Button('Exit')]
     ]
 
-    window = sg.Window('My new window').Layout(layout)
+    window = sg.Window('The Game of Life').Layout(layout)
     graph = window['GRAPH']
-    window.Finalize()
 
-    #FIXME Board state updating not working
-    # Currently only outputts the initial random board state from the first call and then doesn't update
+    keep_playing = False
 
     while True:
-        event, values = window.Read(timeout=10)
+        event, values = window.Read(timeout=0.001)            
 
-        for i in range(total_cells_height + 1):
-            for j in range(total_cells_width + 1):
-                top_left = (j*25, i*25+25)
-                bot_right = (j*25+25, i*25)
-                if board[i][j] == 1:
-                    graph.DrawRectangle(top_left, bot_right, fill_color='white', line_color='white')
-                else:
-                    graph.DrawRectangle(top_left, bot_right, fill_color='black', line_color='black')
-        next_board = next_board_state(next_board, width, height)
-            
+        if event == 'Start':
+            keep_playing = True
 
+        if event == 'Pause':
+            keep_playing = False
+
+        if event == 'Exit':
+            break
+
+        if event == 'Random':
+            next_board = random_state(width, height)
+            cell_gui_render(next_board, graph, total_cells_width, total_cells_height)
+            continue
+
+        if event == 'Blank':
+            next_board = dead_state(width, height)
+            cell_gui_render(next_board, graph, total_cells_width, total_cells_height)
+            continue
+        
+        if keep_playing:
+            next_board = next_board_state(next_board, width, height)
+            graph.erase()
+            cell_gui_render(next_board, graph, total_cells_width, total_cells_height)
     
     window.close()
+
+def cell_gui_render(board, graph, cells_width, cells_height):
+    for i in range(cells_height + 1):
+                for j in range(cells_width + 1):
+                    top_left = (j*25, i*25+25)
+                    bot_right = (j*25+25, i*25)
+                    if board[i][j] == 1:
+                        graph.DrawRectangle(top_left, bot_right, fill_color='white', line_color='white')
+                    else:
+                        graph.DrawRectangle(top_left, bot_right, fill_color='black', line_color='black')
