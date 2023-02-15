@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 import PySimpleGUI as sg
 from tgol import next_board_state, random_state, dead_state
+from render_helper import cell_gui_render
 
 """
 # Board render function to print each board state to command line
@@ -64,15 +65,14 @@ def plt_render(board, width, height):
 """
 # Board render function using pysimplegui grid
 """
-def gui_render(board, width, height):
-    CELL_SIZE = 25
+def gui_render(board, width, height, cell_size):
     next_board = board
-    total_cells_width = width // CELL_SIZE
-    total_cells_height = height // CELL_SIZE
+    total_cells_width = width // cell_size
+    total_cells_height = height // cell_size
 
     layout = [  [sg.Text('Drawing on a %dx%d Grid' % (total_cells_width, total_cells_height))],
+                [sg.Button('Start'), sg.Button('Pause'), sg.Button('Random'), sg.Button('Blank'), sg.Button('Exit')],
                 [sg.Graph((width, height), (0,0), (width, height), background_color='black', drag_submits=True, key='GRAPH')],
-                [sg.Button('Start'), sg.Button('Pause'), sg.Button('Random'), sg.Button('Blank'), sg.Button('Exit')]
     ]
 
     window = sg.Window('The Game of Life').Layout(layout)
@@ -89,32 +89,22 @@ def gui_render(board, width, height):
         if event == 'Pause':
             keep_playing = False
 
-        if event == 'Exit':
+        if event == 'Exit' or event == sg.WINDOW_CLOSED:
             break
 
         if event == 'Random':
             next_board = random_state(width, height)
-            cell_gui_render(next_board, graph, total_cells_width, total_cells_height)
+            cell_gui_render(next_board, graph, total_cells_width, total_cells_height, cell_size)
             continue
 
         if event == 'Blank':
             next_board = dead_state(width, height)
-            cell_gui_render(next_board, graph, total_cells_width, total_cells_height)
+            cell_gui_render(next_board, graph, total_cells_width, total_cells_height, cell_size)
             continue
         
         if keep_playing:
             next_board = next_board_state(next_board, width, height)
             graph.erase()
-            cell_gui_render(next_board, graph, total_cells_width, total_cells_height)
+            cell_gui_render(next_board, graph, total_cells_width, total_cells_height, cell_size)
     
     window.close()
-
-def cell_gui_render(board, graph, cells_width, cells_height):
-    for i in range(cells_height + 1):
-                for j in range(cells_width + 1):
-                    top_left = (j*25, i*25+25)
-                    bot_right = (j*25+25, i*25)
-                    if board[i][j] == 1:
-                        graph.DrawRectangle(top_left, bot_right, fill_color='white', line_color='white')
-                    else:
-                        graph.DrawRectangle(top_left, bot_right, fill_color='black', line_color='black')
